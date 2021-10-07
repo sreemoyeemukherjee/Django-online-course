@@ -122,8 +122,8 @@ def submit(request, course_id):
            choice_id = int(value)
            submitted_anwsers.append(choice_id)
     for choice in submitted_anwsers:
-        submission.chocies.add(get_object_or_404(Choice, pk=choice))
-        submission.save()
+        selected=get_object_or_404(Choice, id=choice)
+        submission.chocies.add(selected)
     return HttpResponseRedirect(reverse(viewname='onlinecourse:show_exam_result', args=(course_id, submission.id,)))
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
@@ -149,15 +149,21 @@ def show_exam_result(request, course_id, submission_id):
     submission = get_object_or_404(Submission, pk=submission_id)
     score=0
     grade=0
-    choice = get_object_or_404(Choice, pk=submissio.chocies)
-    # for choice_id in submission.chocies:
-    #     choice = get_object_or_404(Choice, pk=choice_id)
-    #     question = get_object_or_404(Question, pk=choice.question)
-    #     grade+=question.grade
-    #     if choice.is_correct:
-    #         score+=1
-    context['selected_choice_ids'] = submission.chocies  
-    context['course'] = course.name
-    context['grade'] = grade
+    selected_answer=[]
+    questions=[]
+    for choice in submission.chocies.all():
+        selected = get_object_or_404(Choice, pk=choice.id)
+        question = get_object_or_404(Question, pk=selected.question.id)
+        grade+=question.grade
+        if choice.is_correct:
+            score+=1
+        selected_answer.append(selected.id)
+        questions.append(question.question)
+
+    context['questions']=questions
+    context['selected_answer']=selected_answer
+    context['courses'] = Course.objects.all()
+    context['grade'] = (score/grade)*100
     context['score'] = score
+    context_object_name = 'course_list'
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
