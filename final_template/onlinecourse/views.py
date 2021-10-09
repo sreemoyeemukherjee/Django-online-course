@@ -164,6 +164,6 @@ def show_exam_result(request, course_id, submission_id):
     context['selected_answer']=selected_answer
     context['courses'] = Course.objects.all()
     context['grade'] = (score/grade)*100
-    context['score'] = score
+    context['course'] = course.id
     context_object_name = 'course_list'
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)

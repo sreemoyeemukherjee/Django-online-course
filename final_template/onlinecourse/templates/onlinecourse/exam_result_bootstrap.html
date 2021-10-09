@@ -51,12 +51,21 @@
             {% for course in courses %}
             {% for lesson in course.lesson_set.all %}
             {% for question in lesson.question_set.all %}
-            <h5 class="">{{question.question}}</h5>
-            {% for choice in question.choice_set.all %}
-            {% if choice.is_correct %}
-            <h5 class="">{{choice.choice}}</h5>
-            {% endif %}
-            {% endfor %}
+            <div class="card mt-1">
+                            <div class="card-header"><h5>{{ question.question}}</h5></div>
+                            {% csrf_token %}
+                            <div class="card-body">
+                               {% for choice in question.choice_set.all %}
+                               {% if choice.id in selected_answer %}
+                               {% if choice.is_correct %}
+                               <div class="alert alert-success"><h5 class="">Correct answer: {{choice.choice}}</h5></div> 
+                               {% else %}
+                               <h5 class="">{{choice.choice}}</h5>
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
             {% endfor %}
             {% endfor %}
             {% endfor %}
